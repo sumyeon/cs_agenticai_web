@@ -7,5 +7,5 @@ export const inquiryLabels: Record<string, string> = {
   "ai-ops": "지원 업무 AI 관리 (기존 분류)",
   other: "그 밖의 도입 문의 (기존 분류)",
 };
-export const newInquiryTypes = ["consulting", "cs-solution", "partnership"] as const;
+export const newInquiryTypes = ["cs-solution", "consulting", "partnership"] as const;
 export const stages = ["도입 검토 중", "설계·구축 중", "운영·개선 중"];
