@@ -1,0 +1,25 @@
+import assert from "node:assert/strict";
+const base = process.argv[2] || "http://127.0.0.1:8791";
+const recipient = process.argv[3] || "test@example.invalid";
+const inquiry = {name:"QA 상태 보고 시뮬레이션",company:"QA 메일 미발송 검증",email:`test-${Date.now()}@example.invalid`,interest:"consulting",stage:"도입 검토 중",message:"문의 저장과 결과 보고를 시뮬레이션합니다. 실제 고객 문의가 아니며 외부 메일은 보내지 않습니다.",consent:"yes",startedAt:Date.now()-10000,requestId:crypto.randomUUID(),deliveryToken:crypto.randomUUID()};
+const call = async (method, body, origin=base) => {
+  const response = await fetch(base+"/api/inquiries",{method,headers:{"Content-Type":"application/json",Origin:origin},body:JSON.stringify(body)});
+  return {status:response.status,body:await response.json()};
+};
+const first = await call("POST",inquiry);
+assert.equal(first.status,200);
+assert.equal(first.body.reference,inquiry.requestId);
+assert.equal(first.body.delivery.endpoint,`https://formsubmit.co/ajax/${encodeURIComponent(recipient)}`);
+assert.ok(first.body.delivery.fields["문의 내용"].includes("현재 단계: 도입 검토 중"));
+assert.equal((await call("POST",{...inquiry,deliveryToken:crypto.randomUUID()})).status,403);
+const repeated=await call("POST",inquiry);
+assert.deepEqual(repeated.body.delivery,first.body.delivery);
+const report={reference:inquiry.requestId,deliveryToken:inquiry.deliveryToken,status:"browser_failed"};
+assert.equal((await call("PATCH",{...report,deliveryToken:crypto.randomUUID()})).status,403);
+assert.equal((await call("PATCH",report,"https://other.invalid")).status,403);
+assert.equal((await call("PATCH",report)).status,200);
+assert.equal((await call("PATCH",{...report,status:"browser_accepted"})).status,200);
+assert.equal((await call("PATCH",report)).status,403);
+assert.equal((await call("POST",inquiry)).body.delivery,undefined);
+assert.equal((await call("POST",{...inquiry,requestId:crypto.randomUUID(),consent:"no"})).status,400);
+console.log("PASS: stored payload, duplicate prevention, wrong-token/cross-origin rejection, retry, and accepted-state protection. No real emails sent.");

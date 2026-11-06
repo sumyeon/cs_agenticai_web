@@ -1,0 +1,87 @@
+.diagram {
+  position: relative;
+  isolation: isolate;
+  min-width: 0;
+  width: 100%;
+  margin: 0;
+  padding: 28px;
+  overflow: hidden;
+  border: 1px solid #2c473c;
+  border-radius: 6px;
+  background: #1c3128;
+  color: #fff;
+  box-shadow: 0 24px 48px rgb(0 0 0 / 22%);
+}
+.diagram::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: linear-gradient(to right, #ffffff09 1px, transparent 1px), linear-gradient(to bottom, #ffffff09 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+}
+.header {display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 22px; color: #a3b8ae; font: 11px/1.6 "DM Mono", monospace; letter-spacing: .03em;}
+.controls {display: flex; align-items: center; gap: 12px; flex-shrink: 0;}
+.dot {width: 8px; height: 8px; border-radius: 50%; background: #d4e4bc; box-shadow: 0 0 8px #d4e4bc; animation: pulseDot 2.5s ease-in-out infinite;}
+.motionToggle {display: grid; place-items: center; width: 28px; height: 28px; padding: 0; background: transparent; border: 1px solid #617a6b; border-radius: 4px; color: #d4e4bc;}
+.motionToggle:hover {background: #2c473c;}
+.motionToggle:focus-visible {outline: 2px solid #d4e4bc; outline-offset: 3px;}
+.inputs {display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; width: 82%; list-style: none; margin: 0 auto; padding: 0;}
+.inputs li {padding: 11px 0; text-align: center; border: 1px solid #3a5a4b; border-radius: 2px; background: #1c3128bf; color: #e2ece7; font-size: 13px;}
+.connector {display: block; margin: 0 auto; color: #8ce99a;}
+.flow {animation: dashFlow 1.5s linear infinite;}
+.core {padding: 26px 24px 20px; border-radius: 3px; background: #d4e4bc; color: #1c3128; text-align: center; box-shadow: 0 12px 30px rgb(0 0 0 / 18%);}
+.subtitle {margin: 0 0 6px; color: #355242; font-size: 13px; font-weight: 500;}
+.title {display: block; margin-bottom: 18px; color: #162920; font-size: 32px; font-weight: 800; letter-spacing: -.03em; line-height: 1.1;}
+.process {max-width: 420px; margin: 0 auto;}
+.steps {display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; list-style: none; margin: 0; padding: 0;}
+.step {position: relative; padding: 7px 2px; border: 1px solid #7e9968; border-radius: 4px; background: #1c31280f; font-size: 12.5px; font-weight: 700; white-space: nowrap;}
+.step:nth-child(2) {animation: stepHighlight 3s ease-in-out infinite;}
+.step:nth-child(3) {animation: stepHighlight 3s ease-in-out 1s infinite;}
+.step:last-child {border-color: #1c3128; background: #1c3128; color: #d4e4bc; font-weight: 800;}
+.arrow {position: absolute; right: -14px; top: 50%; transform: translateY(-50%); width: 12px; color: #355242; font-size: 13px;}
+.feedback {position: relative; height: 35px; margin-top: 2px; color: #2a4738;}
+/* Align the return path with the centers of the planning and verification nodes. */
+.loopArrow {position: absolute; left: calc(37.5% - 2px); width: calc(50% + 8px); height: 28px; overflow: visible;}
+.loopArrow .flow {animation-duration: 1.2s;}
+.loopTip {position: absolute; top: 0; left: calc(37.5% - 4px); width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent; border-bottom: 6px solid #2a4738;}
+.loopLabel {position: absolute; top: 13px; left: calc(62.5% + 2px); transform: translateX(-50%); margin: 0; padding: 1px 7px; border-radius: 10px; background: #c3d7a8; color: #1c3128; font-size: 11px; font-weight: 700; line-height: 1.6; white-space: nowrap;}
+.result {display: flex; flex-direction: column; gap: 4px; margin-bottom: 22px; padding: 18px 20px; border: 1px solid #3a5a4b; border-radius: 2px; background: #1c3128bf; text-align: center;}
+.result span {color: #a3b8ae; font-size: 12.5px;}
+.result strong {font-size: 17px; font-weight: 700; letter-spacing: -.02em; word-break: keep-all;}
+.policies {display: flex; justify-content: space-around; flex-wrap: wrap; gap: 8px 12px; max-width: 95%; margin: 0 auto 12px; padding: 0; list-style: none; color: #d4e4bc; font-size: 12.5px; font-weight: 500;}
+.policies li::before {content: ""; display: inline-block; width: 5px; height: 5px; margin: 0 6px 2px 0; border-radius: 50%; background: #8ce99a;}
+.caption {color: #a3b8ae; font-size: 12px; line-height: 1.8; text-align: center; word-break: keep-all;}
+.screenReaderOnly {position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0;}
+.diagram[data-paused="true"] * {animation-play-state: paused;}
+@keyframes dashFlow {to {stroke-dashoffset: -24;}}
+@keyframes pulseDot {0%, 100% {transform: scale(1); opacity: .8;} 50% {transform: scale(1.3); opacity: 1;}}
+@keyframes stepHighlight {0%, 100% {border-color: #7e9968; background: #1c31280f;} 50% {border-color: #1c3128; background: #1c312829;}}
+@media (max-width: 1050px) {
+  .diagram {padding: 24px 18px;}
+  .core {padding-inline: 14px;}
+  .header {font-size: 10px;}
+  .controls {gap: 9px;}
+}
+@media (max-width: 800px) {
+  .diagram {max-width: 650px; margin: 8px auto 0;}
+}
+@media (max-width: 420px) {
+  .diagram {padding: 22px 14px;}
+  .header {gap: 8px; letter-spacing: 0;}
+  .controls {gap: 8px;}
+  .core {padding-inline: 10px;}
+  .step {font-size: 11px;}
+  .inputs {width: 90%; gap: 8px;}
+  .result {padding-inline: 10px;}
+  .result strong {font-size: 15px;}
+  .policies {max-width: 100%; font-size: 11px; gap: 8px;}
+}
+@media (max-width: 360px) {
+  .step {display: flex; align-items: center; justify-content: center; white-space: normal; word-break: keep-all;}
+}
+@media (prefers-reduced-motion: reduce) {
+  .diagram * {animation: none !important;}
+  .motionToggle {display: none;}
+}

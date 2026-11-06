@@ -1,0 +1,4 @@
+import ContactForm from "../contact-form";
+export const metadata={title:"문의하기"};
+export default function Page(){return <main id="main"><section className="page-hero contact-hero"><div className="wrap"><p className="overline">LET’S CONNECT</p><h1>자동화하고 싶은 업무,<br/><em>함께 살펴보겠습니다.</em></h1><p>Agentic AI 컨설팅부터 CS 솔루션 도입까지.<br/>활용하고 싶은 지식과 경험, 반복되는 작업, 기대하는 변화를 알려주세요. 구체적인 기술 계획이 없어도 상담할 수 있습니다.</p></div></section><section className="company-section contact-section"><div className="wrap contact-grid"><div><p className="overline">HOW CAN WE HELP?</p><h2>어떤 도움이<br/>필요하신가요?</h2><div className="contact-options"><article><h3>Agentic AI 컨설팅</h3><p>적용할 업무를 찾거나 AI 선택, 정보 활용, 안전한 실행과 운영 개선을 논의하고 싶을 때.</p></article><article><h3>CS 솔루션 도입·데모</h3><p>반복되는 기술 문의의 분석·처리·답변을 자동화하고, 제품 시연과 도입 조건을 확인하고 싶을 때.</p></article><article><h3>기술 협력·기타</h3><p>공동 개발, 기술 협력 또는 다른 문의를 전하고 싶을 때.</p></article></div></div><ContactForm/></div></section></main>}
+

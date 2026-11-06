@@ -1,0 +1,42 @@
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+import ts from "typescript";
+
+const source = await readFile(new URL("../app/inquiry-notification.ts", import.meta.url), "utf8");
+const js = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } }).outputText;
+const { sendInquiryNotification } = await import(`data:text/javascript;base64,${Buffer.from(js).toString("base64")}`);
+const settings = { INQUIRY_EMAIL_PROVIDER: "formsubmit", INQUIRY_TO_EMAIL: "owner@example.invalid" };
+const inquiry = { id: "test-id", name: "테스트 담당", company: "테스트 회사", email: "sender@example.invalid", category: "Agentic AI 컨설팅", message: "현재 단계: 도입 검토 중\n\n문의 내용 검증", origin: "https://example.invalid" };
+let calls = 0;
+const accepted = async (url, options) => {
+  calls++;
+  assert.equal(url, "https://formsubmit.co/ajax/owner%40example.invalid");
+  const body = JSON.parse(options.body);
+  assert.equal(body._replyto, inquiry.email);
+  assert.equal(body["문의 내용"], inquiry.message);
+  assert.equal(body["문의 분야"], inquiry.category);
+  assert.equal(body["접수 ID"], inquiry.id);
+  assert.ok(!("_cc" in body));
+  assert.equal(options.headers.Referer, "https://example.invalid/contact");
+  assert.equal(body._url, "https://example.invalid/contact");
+  assert.ok(options.signal);
+  return Response.json({ success: "true" });
+};
+assert.equal(await sendInquiryNotification({}, inquiry, accepted), "not_configured");
+assert.equal(calls, 0);
+assert.equal(await sendInquiryNotification(settings, inquiry, accepted), "submitted");
+assert.equal(calls, 1);
+assert.equal(await sendInquiryNotification(settings, inquiry, async () => Response.json({ success: "false", message: "This form needs Activation. We've sent you an email containing an 'Activate Form' link." })), "activation_pending");
+assert.equal(await sendInquiryNotification(settings, inquiry, async () => Response.json({ success: "false" })), "failed");
+assert.equal(await sendInquiryNotification(settings, inquiry, async () => Response.json({ success: true }, { status: 429 })), "failed_http_429");
+assert.equal(await sendInquiryNotification(settings, inquiry, async () => new Response("not JSON")), "failed_response");
+assert.equal(await sendInquiryNotification(settings, inquiry, async () => { throw new DOMException("timeout", "TimeoutError"); }), "failed_timeout");
+assert.equal(await sendInquiryNotification(settings, inquiry, async () => { throw new Error("network"); }), "failed_network");
+assert.equal(await sendInquiryNotification({ ...settings, INQUIRY_EMAIL_PROVIDER: "unknown" }, inquiry, accepted), "not_configured");
+assert.equal(await sendInquiryNotification({ INQUIRY_TO_EMAIL: settings.INQUIRY_TO_EMAIL, RESEND_API_KEY: "test-only", INQUIRY_FROM_EMAIL: "web@example.invalid" }, inquiry, async (url, options) => {
+  assert.equal(url, "https://api.resend.com/emails");
+  assert.equal(JSON.parse(options.body).to[0], settings.INQUIRY_TO_EMAIL);
+  assert.equal(options.headers["Idempotency-Key"], inquiry.id);
+  return Response.json({ id: "provider-id" });
+}), "submitted");
+console.log("PASS: notification routing, fields, activation, provider rejection, timeout, and Resend compatibility. No real emails sent.");
