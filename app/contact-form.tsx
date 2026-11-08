@@ -14,7 +14,7 @@ export default function ContactForm(){
  event.preventDefault();const form=event.currentTarget;if(!attempt.current?.saved&&!form.reportValidity())return;
  const data=Object.fromEntries(new FormData(form).entries());
  const current=attempt.current??{id:crypto.randomUUID(),token:crypto.randomUUID(),saved:false};attempt.current=current;
- setState({kind:"loading",message:current.saved?"담당자에게 알림을 전달하고 있습니다.":"문의를 접수하고 있습니다."});
+ setState({kind:"loading",message:current.saved?"lubrAIn 팀에 문의 알림을 전달하고 있습니다.":"문의를 접수하고 있습니다."});
  try{
   if(!current.saved){
    const response=await fetch("/api/inquiries",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({...data,startedAt,requestId:current.id,deliveryToken:current.token})});
@@ -31,9 +31,9 @@ export default function ContactForm(){
     else if(typeof result.message==="string"&&/activation|activate form/i.test(result.message))status="activation_pending";
    }catch{ /* The saved inquiry remains available even if the mail service is unavailable. */ }
    await fetch("/api/inquiries",{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({reference:current.id,deliveryToken:current.token,status})}).catch(()=>undefined);
-   if(status!=="browser_accepted")throw new Error(`문의는 저장됐지만 담당자 알림을 전달하지 못했습니다. 잠시 후 '알림 다시 보내기'를 눌러 주세요. 접수 번호: ${current.id}`);
+   if(status!=="browser_accepted")throw new Error(`문의는 저장됐지만 lubrAIn 팀에 알림을 전달하지 못했습니다. 잠시 후 '알림 다시 보내기'를 눌러 주세요. 접수 번호: ${current.id}`);
   }
-  attempt.current=null;form.reset();setStartedAt(Date.now());setState({kind:"success",message:"문의가 접수되었습니다. 남겨주신 이메일로 연락드리겠습니다."});
+  attempt.current=null;form.reset();setStartedAt(Date.now());setState({kind:"success",message:"문의가 접수되었습니다. lubrAIn 팀이 내용을 검토한 뒤 남겨주신 이메일로 연락드리겠습니다."});
  }catch(error){setState({kind:"error",message:error instanceof Error?error.message:"접수에 실패했습니다. 잠시 후 다시 시도해 주세요."});}}
  return <form className="contact-form" onSubmit={submit}>
  <p className="form-title">어떤 도움이 필요하신가요?</p>
@@ -48,7 +48,7 @@ export default function ContactForm(){
  <label className="consent"><input type="checkbox" name="consent" value="yes" required/><span>(필수) 문의 응대를 위한 개인정보 수집·이용에 동의합니다.</span></label>
  <details className="privacy-details"><summary>개인정보 수집·이용 안내</summary><p>수집 항목: 이름, 회사명, 이메일, 문의 분야와 내용, 선택 입력한 도입 단계 또는 사용 도구. 이용 목적: 컨설팅·솔루션·협력 문의 확인과 답변. 문의 처리와 후속 협의에 필요한 기간 동안 보관하며, 삭제 요청은 이 양식으로 접수할 수 있습니다. 동의하지 않으면 문의를 접수할 수 없습니다.</p><p>문의 알림을 담당자에게 전달하기 위해 입력한 내용은 이메일 전송 서비스 FormSubmit을 거쳐 담당자 메일함으로 전달됩니다. FormSubmit은 전송 내역을 30일간 보관한다고 안내합니다. <a href="https://formsubmit.co/privacy.pdf" target="_blank" rel="noopener noreferrer">FormSubmit 개인정보 안내 (새 창)</a></p></details>
  </fieldset>
- <button className="submit-button" type="submit" disabled={state.kind==="loading"}>{state.kind==="loading"?"접수 중...":attempt.current?.saved?"알림 다시 보내기":"문의 보내기"}<span aria-hidden="true">↗</span></button>
+ <button className="submit-button" type="submit" disabled={state.kind==="loading"}>{state.kind==="loading"?"접수 중...":attempt.current?.saved?"알림 다시 보내기":interest==="cs-solution"?"자동화 진단 요청하기":"문의 보내기"}<span aria-hidden="true">↗</span></button>
  <p className={"form-status "+state.kind} role="status" aria-live="polite">{state.message}</p></form>
 }
 

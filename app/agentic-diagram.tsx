@@ -44,7 +44,7 @@ export default function AgenticDiagram() {
             <path className={styles.flow} d="M99 1V16Q99 22 94 22H6Q1 22 1 16V4" fill="none" stroke="currentColor" strokeWidth="1.5" strokeDasharray="4 3" vectorEffect="non-scaling-stroke" />
           </svg>
           <span className={styles.loopTip} aria-hidden="true" />
-          <p className={styles.loopLabel}><span aria-hidden="true">↻ </span>자율 피드백 루프<span className={styles.screenReaderOnly}>: 업무 목표와 검증 결과를 바탕으로 계획과 실행을 조정합니다.</span></p>
+          <p className={styles.loopLabel}><span aria-hidden="true">↻ </span>사전 검증 및 보완<span className={styles.screenReaderOnly}>: 승인 요청 전 테스트를 실행하고, 실패 시 허용된 범위에서 수정안을 보완합니다. 해결하지 못하면 담당자에게 실패 원인을 알립니다.</span></p>
         </div>
       </div>
     </div>

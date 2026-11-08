@@ -1,0 +1,6 @@
+.group{margin-bottom:28px}.group h3{font-size:21px;margin:0 0 6px}.group>p{margin:0 0 16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,160px),1fr));gap:16px;list-style:none;padding:0;margin:0}
+.grid li{border:1px solid #d4ded5;background:#fff;border-radius:4px}
+.card{display:flex;flex-direction:column;align-items:center;gap:12px;padding:24px 16px;text-align:center;height:100%;color:#203936}
+.grid img{width:32px;height:32px;object-fit:contain}.grid strong{font-size:18px}.grid span{font-size:13px;color:#5b6b63}
+.protocols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:24px;border-block:1px solid #d4ded5;padding:20px 0}.protocols h3{font-size:19px;margin:0}.protocols p{margin-bottom:0}
